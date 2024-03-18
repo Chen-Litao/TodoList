@@ -38,7 +38,7 @@ func Loade() {
 		return
 	}
 	path := strings.Join([]string{config.Mysql.User, ":", config.Mysql.Password, "@tcp(", config.Mysql.IP, ":",
-		config.Mysql.Port, ")/", config.Mysql.Database, "?charset=utf8mb4"}, "")
+		config.Mysql.Port, ")/", config.Mysql.Database, "?charset=utf8mb4&parseTime=true"}, "")
 	fmt.Println(path)
 	db, err := gorm.Open(mysql.Open(path), &gorm.Config{})
 	if err != nil {

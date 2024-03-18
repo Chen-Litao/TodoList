@@ -8,5 +8,4 @@ import (
 func main() {
 	config.Loade()
 	routes.NewRoute()
-
 }

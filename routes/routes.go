@@ -8,5 +8,6 @@ import (
 func NewRoute() {
 	r := gin.Default()
 	r.POST("/register", service.RegisterHandle())
+	r.POST("/login", service.LoginHandle())
 	r.Run(":8080")
 }
