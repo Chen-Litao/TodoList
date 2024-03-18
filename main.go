@@ -1,8 +1,12 @@
 package main
 
-import "ToDoList_self/config"
+import (
+	"ToDoList_self/config"
+	"ToDoList_self/routes"
+)
 
 func main() {
 	config.Loade()
-	return
+	routes.NewRoute()
+
 }
