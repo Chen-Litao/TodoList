@@ -64,7 +64,7 @@ func RegisterHandle() func(ctx *gin.Context) {
 	}
 }
 
-var jwtSecret = []byte(os.Getenv("JWT_SECRET"))
+var JwtSecret = []byte(os.Getenv("JWT_SECRET"))
 
 func LoginHandle() func(ctx *gin.Context) {
 	return func(ctx *gin.Context) {
@@ -95,7 +95,7 @@ func LoginHandle() func(ctx *gin.Context) {
 					},
 				}
 				tokenClaims := jwt.NewWithClaims(jwt.SigningMethodHS256, claims)
-				jwtStr, err := tokenClaims.SignedString(jwtSecret)
+				jwtStr, err := tokenClaims.SignedString(JwtSecret)
 				if err != nil {
 					fmt.Println("生成jwt参数失败：", err)
 					return
