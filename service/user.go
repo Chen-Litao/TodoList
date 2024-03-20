@@ -2,15 +2,13 @@ package service
 
 import (
 	"ToDoList_self/config"
+	"ToDoList_self/pkg/util"
 	"ToDoList_self/repository/db/model"
 	"errors"
 	"fmt"
-	"github.com/dgrijalva/jwt-go"
 	"github.com/gin-gonic/gin"
 	"gorm.io/gorm"
 	"net/http"
-	"os"
-	"time"
 )
 
 type RegisterReq struct {
@@ -20,11 +18,6 @@ type RegisterReq struct {
 type LoginReq struct {
 	User     string `form:"user" json:"user"`
 	Password string `form:"password" json:"password"`
-}
-type Claims struct {
-	User     string
-	Password string
-	jwt.StandardClaims
 }
 
 func RegisterHandle() func(ctx *gin.Context) {
@@ -64,8 +57,6 @@ func RegisterHandle() func(ctx *gin.Context) {
 	}
 }
 
-var JwtSecret = []byte(os.Getenv("JWT_SECRET"))
-
 func LoginHandle() func(ctx *gin.Context) {
 	return func(ctx *gin.Context) {
 		var login LoginReq
@@ -83,25 +74,16 @@ func LoginHandle() func(ctx *gin.Context) {
 			//检索到了用户
 			//验证密码是否匹配
 			if login.Password == Userreq.Password {
-				//生成token
-				nowTime := time.Now()
-				expireTime := nowTime.Add(24 * time.Hour)
-				claims := Claims{
-					User:     login.User,
-					Password: login.Password,
-					StandardClaims: jwt.StandardClaims{
-						ExpiresAt: expireTime.Unix(),
-						Issuer:    "to-do-list",
-					},
-				}
-				tokenClaims := jwt.NewWithClaims(jwt.SigningMethodHS256, claims)
-				jwtStr, err := tokenClaims.SignedString(JwtSecret)
+				Token, err := util.CreateToken(login.User, login.Password)
 				if err != nil {
-					fmt.Println("生成jwt参数失败：", err)
-					return
+					fmt.Println("token生成失败", err)
+					ctx.JSON(http.StatusBadRequest, gin.H{
+						"ERROR":   err,
+						"message": "生成token失效",
+					})
 				}
 				ctx.JSON(http.StatusOK, gin.H{
-					"Token":   jwtStr,
+					"Token":   Token,
 					"message": "验证成功，生成token",
 				})
 			} else {
