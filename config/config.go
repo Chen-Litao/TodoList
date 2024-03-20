@@ -2,6 +2,7 @@ package config
 
 import (
 	"ToDoList_self/repository/db/model"
+	"context"
 	"fmt"
 	"gopkg.in/yaml.v3"
 	"gorm.io/driver/mysql"
@@ -59,4 +60,9 @@ func Loade() {
 		return
 	}
 	DB = db
+}
+func NewDBClient(ctx context.Context) *gorm.DB {
+	db := DB
+	//加上上下文关联
+	return db.WithContext(ctx)
 }
