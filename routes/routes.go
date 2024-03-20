@@ -13,9 +13,7 @@ func NewRoute() {
 	authed := r.Group("/")
 	authed.Use(middleware.JWT())
 	{
-		authed.GET("ping", func(c *gin.Context) {
-			c.JSON(200, "success")
-		})
+		authed.POST("task_create", service.CreateTaskHandle())
 	}
 	r.Run(":8080")
 }
