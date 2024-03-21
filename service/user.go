@@ -2,13 +2,13 @@ package service
 
 import (
 	"ToDoList_self/pkg/e"
+	"ToDoList_self/pkg/log"
 	"ToDoList_self/pkg/util"
 	"ToDoList_self/repository/db/dao"
 	"ToDoList_self/repository/db/model"
 	"ToDoList_self/types"
 	"context"
 	"errors"
-	"fmt"
 	"gorm.io/gorm"
 	"sync"
 )
@@ -26,6 +26,7 @@ func GetUserSrv() *UserSrv {
 	})
 	return UserSrvIns
 }
+
 func (s *UserSrv) Register(ctx context.Context, req *types.RegisterReq) (code int, err error) {
 	userdao := dao.NewUserDao(ctx)
 	_, err = userdao.FindUserByUserName(req.User)
@@ -35,20 +36,21 @@ func (s *UserSrv) Register(ctx context.Context, req *types.RegisterReq) (code in
 	case gorm.ErrRecordNotFound:
 		req.Password, err = model.SetPassword(req.Password)
 		if err != nil {
-			fmt.Println("密码加密错误")
 			code = e.ErrorFailEncryption
+			log.LoggerObj.Error(err, e.GetMsg(code))
 			return
 		}
 		regUser := model.User{UserName: req.User, Password: req.Password}
 		err = userdao.CreateUser(&regUser)
 		if err != nil {
-			fmt.Println("创建用户出错")
 			code = e.ErrorCreateUser
+			log.LoggerObj.Error(err, e.GetMsg(code))
 			return
 		}
 	case nil:
-		err = errors.New("注册用户失败，用户已存在")
 		code = e.ErrorExistUser
+		log.LoggerObj.Error(err, e.GetMsg(code))
+		err = errors.New("用户已存在")
 		return
 	default:
 		return
@@ -61,22 +63,22 @@ func (s *UserSrv) Login(ctx context.Context, req *types.LoginReq) (Token string,
 	user, err := userdao.FindUserByUserName(req.User)
 	code = e.SUCCESS
 	if err != nil {
-		fmt.Println("未找到相关用户", err)
 		code = e.ErrorNotExistUser
+		log.LoggerObj.Error(err, e.GetMsg(code))
 		return
 	}
 	//已经找到用户开始匹配密码
 	if model.CheckPassword(user.Password, req.Password) {
 		Token, err = util.CreateToken(req.User, req.Password)
 		if err != nil {
-			fmt.Println("token生成失败", err)
 			code = e.ErrorAuthToken
+			log.LoggerObj.Error(err, e.GetMsg(code))
 			return
 		}
 		return
 	} else {
-		err = errors.New("密码匹配错误")
 		code = e.ErrorNotCompare
+		log.LoggerObj.Error(err, e.GetMsg(code))
 		return
 	}
 }
