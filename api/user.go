@@ -1,6 +1,7 @@
 package api
 
 import (
+	"ToDoList_self/pkg/ctl"
 	"ToDoList_self/service"
 	"ToDoList_self/types"
 	"fmt"
@@ -18,17 +19,12 @@ func RegisterHandle() func(ctx *gin.Context) {
 			fmt.Println("请求参数获取失败：", err)
 		}
 		l := service.GetUserSrv()
-		err := l.Register(ctx.Request.Context(), &register)
+		code, err := l.Register(ctx.Request.Context(), &register)
 		if err != nil {
-			ctx.JSON(http.StatusInternalServerError, gin.H{
-				"ERROR":   err,
-				"message": "用户注册失败",
-			})
+			ctx.JSON(http.StatusInternalServerError, ctl.RespError(err, code))
 			return
 		} else {
-			ctx.JSON(http.StatusOK, gin.H{
-				"message": "用户注册成功",
-			})
+			ctx.JSON(http.StatusOK, ctl.RespSuccess())
 			return
 		}
 	}
@@ -45,18 +41,12 @@ func LoginHandle() func(ctx *gin.Context) {
 		}
 		//判断当前按用户是否存在
 		l := service.GetUserSrv()
-		token, err := l.Login(ctx.Request.Context(), &login)
+		token, code, err := l.Login(ctx.Request.Context(), &login)
 		if err != nil {
-			ctx.JSON(http.StatusInternalServerError, gin.H{
-				"ERROR":   err,
-				"message": "用户登录失败",
-			})
+			ctx.JSON(http.StatusInternalServerError, ctl.RespError(err, code))
 			return
 		} else {
-			ctx.JSON(http.StatusOK, gin.H{
-				"token":   token,
-				"message": "用户登录成功",
-			})
+			ctx.JSON(http.StatusOK, ctl.RespSuccessWithData(token))
 			return
 		}
 	}
