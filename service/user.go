@@ -31,6 +31,11 @@ func (s *UserSrv) Register(ctx context.Context, req *types.RegisterReq) (err err
 	//判断当前按用户是否存在
 	switch err {
 	case gorm.ErrRecordNotFound:
+		req.Password, err = model.SetPassword(req.Password)
+		if err != nil {
+			fmt.Println("密码加密错误")
+			return
+		}
 		regUser := model.User{UserName: req.User, Password: req.Password}
 		err = userdao.CreateUser(&regUser)
 		if err != nil {
@@ -54,7 +59,7 @@ func (s *UserSrv) Login(ctx context.Context, req *types.LoginReq) (Token string,
 		return
 	}
 	//已经找到用户开始匹配密码
-	if req.Password == user.Password {
+	if model.CheckPassword(user.Password, req.Password) {
 		Token, err = util.CreateToken(req.User, req.Password)
 		if err != nil {
 			fmt.Println("token生成失败", err)

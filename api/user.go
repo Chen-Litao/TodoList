@@ -49,13 +49,13 @@ func LoginHandle() func(ctx *gin.Context) {
 		if err != nil {
 			ctx.JSON(http.StatusInternalServerError, gin.H{
 				"ERROR":   err,
-				"message": "用户注册失败",
+				"message": "用户登录失败",
 			})
 			return
 		} else {
 			ctx.JSON(http.StatusOK, gin.H{
 				"token":   token,
-				"message": "用户注册成功",
+				"message": "用户登录成功",
 			})
 			return
 		}
