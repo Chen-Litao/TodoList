@@ -6,6 +6,13 @@ import (
 	"ToDoList_self/routes"
 )
 
+// @title Self_TDoList
+// @version 0.10
+// @description A sample demo of ToDoList
+// @contact.name Little Chen
+// @license.name Apache 2.0
+// @license.url http://www.apache.org/licenses/LICENSE-2.0.html
+// @BasePath /todoList
 func main() {
 	config.Loade()
 	log.InitLog()

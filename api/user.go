@@ -9,6 +9,16 @@ import (
 	"net/http"
 )
 
+// RegisterHandle
+
+// RegisterHandle @Tags USER
+// @Summary 用户注册接口接口
+// @Accept json
+// @Produce json
+// @Param data body types.RegisterReq true "用户名, 密码"
+// @Success 200 {object} ctl.Response "{"status":200,"data":{},"msg":"ok"}"
+// @Failure 500  {object} ctl.Response "{"status":500,"data":{},"Msg":{},"Error":"error"}"
+// @Router /register [post]
 func RegisterHandle() func(ctx *gin.Context) {
 	return func(ctx *gin.Context) {
 		var register types.RegisterReq
@@ -30,6 +40,14 @@ func RegisterHandle() func(ctx *gin.Context) {
 	}
 }
 
+// LoginHandle @Tags USER
+// @Summary 用户登录接口接口
+// @Accept json
+// @Produce json
+// @Param data body types.LoginReq true "用户名, 密码"
+// @Success 200 {object} ctl.Response "{"status":200,"data":{},"msg":"ok"}"
+// @Failure 500  {object} ctl.Response "{"status":500,"data":{},"Msg":{},"Error":"error"}"
+// @Router /login [post]
 func LoginHandle() func(ctx *gin.Context) {
 	return func(ctx *gin.Context) {
 		var login types.LoginReq

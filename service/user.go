@@ -78,6 +78,7 @@ func (s *UserSrv) Login(ctx context.Context, req *types.LoginReq) (Token string,
 		return
 	} else {
 		code = e.ErrorNotCompare
+		err = errors.New("密码匹配错误")
 		log.LoggerObj.Error(err, e.GetMsg(code))
 		return
 	}
