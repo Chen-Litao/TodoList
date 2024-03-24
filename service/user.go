@@ -13,7 +13,8 @@ import (
 	"sync"
 )
 
-// 因为后续操作涉及对数据库的CRUD所以采用单例模式，保证数据的一致性
+//因为后续操作涉及对数据库的CRUD所以采用单例模式，保证数据的一致性
+
 var UserSrvIns *UserSrv
 var UserSrvOnce sync.Once
 
@@ -69,7 +70,7 @@ func (s *UserSrv) Login(ctx context.Context, req *types.LoginReq) (Token string,
 	}
 	//已经找到用户开始匹配密码
 	if model.CheckPassword(user.Password, req.Password) {
-		Token, err = util.CreateToken(req.User, req.Password)
+		Token, err = util.CreateToken(user.UserName, user.Password, user.ID)
 		if err != nil {
 			code = e.ErrorAuthToken
 			log.LoggerObj.Error(err, e.GetMsg(code))

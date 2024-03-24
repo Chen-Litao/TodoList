@@ -16,5 +16,8 @@ const (
 	ErrorAuthCheckTokenTimeout = 30002 //token 过期
 	ErrorAuthToken             = 30003
 	ErrorAuth                  = 30004
-	ErrorDatabase              = 40001
+
+	ErrorDatabase    = 40001
+	ErrorGetUserInfo = 40002
+	ErrorCreateTask  = 40003
 )

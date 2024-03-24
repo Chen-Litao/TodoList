@@ -26,8 +26,8 @@ func (dao *UserDao) FindUserByUserName(userName string) (user *model.User, err e
 }
 
 // 通过id找对象
-func (dao *UserDao) FindUserByUserID(userName string) (user *model.User, err error) {
-	err = dao.Model(&model.User{}).Where("id=?", userName).First(&user).Error
+func (dao *UserDao) FindUserByUserID(userID uint) (user *model.User, err error) {
+	err = dao.Model(&model.User{}).Where("id=?", userID).First(&user).Error
 	return
 }
 

@@ -15,6 +15,8 @@ var CodeMsg = map[int]string{
 	ErrorAuthToken:             "授权token失效",
 	ErrorAuth:                  "Token错误",
 	ErrorDatabase:              "数据库操作出错,请重试",
+	ErrorGetUserInfo:           "获取用户信息失败",
+	ErrorCreateTask:            "创建任务失败",
 }
 
 // GetMsg 获取状态码对应信息

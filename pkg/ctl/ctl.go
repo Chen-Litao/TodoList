@@ -12,6 +12,12 @@ type Response struct {
 	Error  string      `json:"error"`
 }
 
+// DataList 带有总数的Data结构
+type DataList struct {
+	Item  interface{} `json:"item"`
+	Total int64       `json:"total"`
+}
+
 // RespSuccess 成功返回
 func RespSuccess(code ...int) *Response {
 	status := e.SUCCESS
@@ -57,4 +63,15 @@ func RespError(err error, code ...int) *Response {
 		Error:  err.Error(),
 	}
 	return r
+}
+
+func RespListWithTotal(items interface{}, total int64) Response {
+	return Response{
+		Status: 200,
+		Data: DataList{
+			Item:  items,
+			Total: total,
+		},
+		Msg: "ok",
+	}
 }

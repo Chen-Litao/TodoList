@@ -8,6 +8,7 @@ import (
 
 // 该文件用于写jwt的基础操作
 type Claims struct {
+	Id       uint `json:"id"`
 	User     string
 	Password string
 	jwt.StandardClaims
@@ -15,11 +16,12 @@ type Claims struct {
 
 var JwtSecret = []byte(os.Getenv("JWT_SECRET"))
 
-func CreateToken(UserName, Password string) (string, error) {
+func CreateToken(UserName, Password string, ID uint) (string, error) {
 	//生成token
 	nowTime := time.Now()
 	expireTime := nowTime.Add(24 * time.Hour)
 	claims := Claims{
+		Id:       ID,
 		User:     UserName,
 		Password: Password,
 		StandardClaims: jwt.StandardClaims{

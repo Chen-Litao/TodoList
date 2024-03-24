@@ -1,6 +1,7 @@
 package middleware
 
 import (
+	"ToDoList_self/pkg/ctl"
 	"ToDoList_self/pkg/util"
 	"github.com/gin-gonic/gin"
 	"net/http"
@@ -30,6 +31,7 @@ func JWT() gin.HandlerFunc {
 			c.Abort()
 			return
 		}
+		c.Request = c.Request.WithContext(ctl.NewUserOptContext(c.Request.Context(), &ctl.UserInfo{Id: tokenclaim.Id}))
 
 	}
 }
