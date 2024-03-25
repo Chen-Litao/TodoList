@@ -40,6 +40,7 @@ type ShowTasksTx struct {
 	Id        uint
 	Title     string
 	Status    int
+	ViewCount uint64
 	Content   string
 	StartTime int64
 	CreatedAt int64

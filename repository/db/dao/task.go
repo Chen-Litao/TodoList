@@ -1,7 +1,6 @@
 package dao
 
 import (
-	"ToDoList_self/config"
 	"ToDoList_self/repository/db/model"
 	"ToDoList_self/types"
 	"context"
@@ -17,7 +16,7 @@ func NewTaskDao(ctx context.Context) *TaskDao {
 	if ctx == nil {
 		ctx = context.Background()
 	}
-	return &TaskDao{config.NewDBClient(ctx)}
+	return &TaskDao{NewDBClient(ctx)}
 }
 
 func (dao *TaskDao) CreateTask(userInfo *model.Task) (err error) {

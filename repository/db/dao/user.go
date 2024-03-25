@@ -1,7 +1,6 @@
 package dao
 
 import (
-	"ToDoList_self/config"
 	"ToDoList_self/repository/db/model"
 	"context"
 	"gorm.io/gorm"
@@ -16,7 +15,7 @@ func NewUserDao(ctx context.Context) *UserDao {
 	if ctx == nil {
 		ctx = context.Background()
 	}
-	return &UserDao{config.NewDBClient(ctx)}
+	return &UserDao{NewDBClient(ctx)}
 }
 
 // 通过用户名找对象

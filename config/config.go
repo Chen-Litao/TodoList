@@ -1,19 +1,14 @@
 package config
 
 import (
-	"ToDoList_self/repository/db/model"
-	"context"
 	"fmt"
 	"gopkg.in/yaml.v3"
-	"gorm.io/driver/mysql"
-	"gorm.io/gorm"
 	"os"
-	"strings"
-	"time"
 )
 
 type Config struct {
 	Mysql Mysql
+	Redis Redis
 }
 
 type Mysql struct {
@@ -24,45 +19,23 @@ type Mysql struct {
 	Database string
 }
 
-var DB *gorm.DB
+type Redis struct {
+	RedisAddr string
+	Password  string
+	RedisDB   string
+}
 
-func Loade() {
+var ConfigVal *Config
+
+func LoadeConf() {
 	dataBase, err := os.ReadFile("config/config.yaml")
 	if err != nil {
 		fmt.Println("读取文件失败：", err)
 		return
 	}
-	config := Config{}
-	err = yaml.Unmarshal(dataBase, &config)
+	err = yaml.Unmarshal(dataBase, &ConfigVal)
 	if err != nil {
 		fmt.Println("解析yaml失败：", err)
 		return
 	}
-	path := strings.Join([]string{config.Mysql.User, ":", config.Mysql.Password, "@tcp(", config.Mysql.IP, ":",
-		config.Mysql.Port, ")/", config.Mysql.Database, "?charset=utf8mb4&parseTime=true"}, "")
-	fmt.Println(path)
-	db, err := gorm.Open(mysql.Open(path), &gorm.Config{})
-	if err != nil {
-		fmt.Println("数据库连接失败：", err)
-		return
-	}
-	sqlDB, err := db.DB()
-	//设置空闲连接池
-	sqlDB.SetMaxIdleConns(10)
-	//设置最大连接数
-	sqlDB.SetMaxOpenConns(100)
-	//设置连接时间
-	sqlDB.SetConnMaxLifetime(time.Hour)
-	err = db.AutoMigrate(&model.User{},
-		&model.Task{})
-	if err != nil {
-		fmt.Println("数据库迁移失败：", err)
-		return
-	}
-	DB = db
-}
-func NewDBClient(ctx context.Context) *gorm.DB {
-	db := DB
-	//加上上下文关联
-	return db.WithContext(ctx)
 }

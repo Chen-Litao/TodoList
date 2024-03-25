@@ -5,3 +5,7 @@ mysql:
   password: hsp
   database: todolist
 
+redis:
+  redisAddr: localhost:6379
+  password:
+  redisDB: 1

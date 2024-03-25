@@ -3,6 +3,8 @@ package main
 import (
 	"ToDoList_self/config"
 	"ToDoList_self/pkg/log"
+	"ToDoList_self/repository/cache"
+	"ToDoList_self/repository/db/dao"
 	"ToDoList_self/routes"
 )
 
@@ -14,7 +16,9 @@ import (
 // @license.url http://www.apache.org/licenses/LICENSE-2.0.html
 // @BasePath /todoList
 func main() {
-	config.Loade()
+	config.LoadeConf()
+	dao.InitMysql()
+	cache.InitRedis()
 	log.InitLog()
 	routes.NewRoute()
 }
