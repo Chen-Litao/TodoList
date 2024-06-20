@@ -3,9 +3,16 @@ mysql:
   port: 3306
   user: root
   password: hsp
-  database: todolist
+  database: db1
 
 redis:
   redisAddr: localhost:6379
   password:
   redisDB: 1
+
+rabbitmq:
+  rabbitMQ: amqp
+  rabbitMQUser: guest
+  rabbitMQPassWord: guest
+  rabbitMQHost: localhost
+  rabbitMQPort: 5672

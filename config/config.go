@@ -7,8 +7,9 @@ import (
 )
 
 type Config struct {
-	Mysql Mysql
-	Redis Redis
+	Mysql    Mysql
+	Redis    Redis
+	RabbitMQ RabbitMQ
 }
 
 type Mysql struct {
@@ -23,6 +24,13 @@ type Redis struct {
 	RedisAddr string
 	Password  string
 	RedisDB   string
+}
+type RabbitMQ struct {
+	RabbitMQ         string
+	RabbitMQUser     string
+	RabbitMQPassWord string
+	RabbitMQHost     string
+	RabbitMQPort     string
 }
 
 var ConfigVal *Config
