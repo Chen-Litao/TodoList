@@ -14,5 +14,5 @@ rabbitmq:
   rabbitMQ: amqp
   rabbitMQUser: guest
   rabbitMQPassWord: guest
-  rabbitMQHost: localhost
+  rabbitMQHost: 10.151.1.122
   rabbitMQPort: 5672

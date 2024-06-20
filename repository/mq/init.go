@@ -22,7 +22,9 @@ func InitRabbitMQ() {
 	if err != nil {
 		panic(err)
 	}
-	BaseRmq.MqUrl = connString
+	BaseRmq = &RabbitMQ{
+		MqUrl: connString,
+	}
 	BaseRmq.conn = conn
 	BaseRmq.channel, err = conn.Channel()
 	BaseRmq.failOnError(err, "Failed to get channel")

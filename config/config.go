@@ -13,24 +13,25 @@ type Config struct {
 }
 
 type Mysql struct {
-	IP       string
-	Port     string
-	User     string
-	Password string
-	Database string
+	IP       string `yaml:"ip"`
+	Port     string `yaml:"port"`
+	User     string `yaml:"user"`
+	Password string `yaml:"password"`
+	Database string `yaml:"database"`
 }
 
 type Redis struct {
-	RedisAddr string
-	Password  string
-	RedisDB   string
+	RedisAddr string `yaml:"redisAddr"`
+	Password  string `yaml:"password"`
+	RedisDB   string `yaml:"redisDB"`
 }
+
 type RabbitMQ struct {
-	RabbitMQ         string
-	RabbitMQUser     string
-	RabbitMQPassWord string
-	RabbitMQHost     string
-	RabbitMQPort     string
+	RabbitMQ         string `yaml:"rabbitMQ"`
+	RabbitMQUser     string `yaml:"rabbitMQUser"`
+	RabbitMQPassWord string `yaml:"rabbitMQPassWord"`
+	RabbitMQHost     string `yaml:"rabbitMQHost"`
+	RabbitMQPort     string `yaml:"rabbitMQPort"`
 }
 
 var ConfigVal *Config
