@@ -6,9 +6,9 @@ mysql:
   database: db1
 
 redis:
-  redisAddr: localhost:6379
+  redisAddr: 10.151.1.122:6379
   password:
-  redisDB: 1
+  redisDB:
 
 rabbitmq:
   rabbitMQ: amqp

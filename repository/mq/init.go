@@ -1,10 +1,8 @@
 package mq
 
 import (
-	"ToDoList_self/config"
 	amqp "github.com/rabbitmq/amqp091-go"
 	"log"
-	"strings"
 )
 
 var BaseRmq *RabbitMQ
@@ -17,7 +15,8 @@ type RabbitMQ struct {
 }
 
 func InitRabbitMQ() {
-	connString := strings.Join([]string{config.ConfigVal.RabbitMQ.RabbitMQ, "://", config.ConfigVal.RabbitMQ.RabbitMQUser, ":", config.ConfigVal.RabbitMQ.RabbitMQPassWord, "@", config.ConfigVal.RabbitMQ.RabbitMQHost, ":", config.ConfigVal.RabbitMQ.RabbitMQPort, "/"}, "")
+	//connString := strings.Join([]string{config.ConfigVal.RabbitMQ.RabbitMQ, "://", config.ConfigVal.RabbitMQ.RabbitMQUser, ":", config.ConfigVal.RabbitMQ.RabbitMQPassWord, "@", config.ConfigVal.RabbitMQ.RabbitMQHost, ":", config.ConfigVal.RabbitMQ.RabbitMQPort, "/"}, "")
+	connString := "amqp://guest:guest@10.151.1.122:5672/"
 	conn, err := amqp.Dial(connString)
 	if err != nil {
 		panic(err)

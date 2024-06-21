@@ -21,3 +21,11 @@ const (
 	ErrorGetUserInfo = 40002
 	ErrorCreateTask  = 40003
 )
+
+// TODO 统一风格
+const (
+	DB_INSERT = "insert"
+	DB_UPDATE = "update"
+	DB_DELETE = "delete"
+	DB_SEARCH = "search"
+)

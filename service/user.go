@@ -19,6 +19,7 @@ var UserSrvIns *UserSrv
 var UserSrvOnce sync.Once
 
 type UserSrv struct {
+	FollowService
 }
 
 func GetUserSrv() *UserSrv {

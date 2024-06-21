@@ -30,7 +30,8 @@ func InitMysql() {
 	//设置连接时间
 	sqlDB.SetConnMaxLifetime(time.Hour)
 	err = db.AutoMigrate(&model.User{},
-		&model.Task{})
+		&model.Task{},
+		&model.Follow{})
 	if err != nil {
 		fmt.Println("数据库迁移失败：", err)
 		return
