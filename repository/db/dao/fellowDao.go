@@ -101,3 +101,50 @@ func (dao *FollowDao) GetFollowersInfo(userId int64) ([]int64, int64, error) {
 
 	return followerId, followerCnt, nil
 }
+
+// GetUserName 在user表中根据id查询用户姓名，放在followDao文件中并不妥当，后续可能废弃
+func (dao *FollowDao) GetUserName(userId int64) (string, error) {
+	var name string
+
+	err := dao.Table("users").Where("id = ?", userId).Pluck("user_name", &name).Error
+
+	if nil != err {
+		log.Println(err.Error())
+		return "", err
+	}
+
+	return name, nil
+}
+
+// GetFollowerCnt 给定当前用户id，查询relation表中该用户的粉丝数。
+func (dao *FollowDao) GetFollowerCnt(userId int64) (int64, error) {
+	// 用于存储当前用户粉丝数的变量
+	var cnt int64
+	// 当查询出现错误的情况，日志打印err msg，并返回err.
+	if err := dao.
+		Model(&model.Follow{}).
+		Where("following_id = ?", userId).
+		Where("followed = ?", 1).
+		Count(&cnt).Error; nil != err {
+		log.Println(err.Error())
+		return 0, err
+	}
+	// 正常情况，返回取到的粉丝数。
+	return cnt, nil
+}
+
+// GetFollowingCnt 给定当前用户id，查询relation表中该用户关注了多少人。
+func (dao *FollowDao) GetFollowingCnt(userId int64) (int64, error) {
+	// 用于存储当前用户关注了多少人。
+	var cnt int64
+	// 查询出错，日志打印err msg，并return err
+	if err := dao.Model(&model.Follow{}).
+		Where("user_id = ?", userId).
+		Where("followed = ?", 1).
+		Count(&cnt).Error; nil != err {
+		log.Println(err.Error())
+		return 0, err
+	}
+	// 查询成功，返回人数。
+	return cnt, nil
+}

@@ -50,7 +50,22 @@ func RelationActionHandle() func(ctx *gin.Context) {
 
 func FollowListHandle() func(ctx *gin.Context) {
 	return func(ctx *gin.Context) {
+		var followlist types.FollowListReq
+		fmt.Println(followlist.ID)
+		if err := ctx.ShouldBind(&followlist); err == nil {
+			fmt.Printf("Register info:%#v\n", followlist)
+		} else {
+			fmt.Println("请求参数获取失败：", err)
+		}
+		l := service.GetFollowSrv()
+		followings, err1 := l.GetFollowings(int64(followlist.ID))
+		if err1 != nil {
+			fmt.Printf("fail")
+			ctx.JSON(http.StatusOK, ctl.RespError(err1))
+			return
+		}
 
+		ctx.JSON(http.StatusOK, followings)
 	}
 }
 

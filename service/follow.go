@@ -158,3 +158,101 @@ func DelToRDBWhenCancelFollow(userId int64, targetId int64) {
 	cache.UserFollowers.SRem(cache.Ctx, strconv.FormatInt(targetId, 10), userId)
 
 }
+
+func (followService *FollowSrv) GetFollowings(userId int64) ([]User, error) {
+	// 调用集成redis的关注用户获取接口获取关注用户id和关注用户数量
+	userFollowingsId, userFollowingsCnt, err := GetFollowingsByRedis(userId)
+	if nil != err {
+		log.Println(err.Error())
+	}
+	// 根据关注用户数量创建空用户结构体数组
+	userFollowings := make([]User, userFollowingsCnt)
+
+	// 传入buildtype调用用户构建函数构建关注用户数组
+	err1 := followService.BuildUser(userId, userFollowings, userFollowingsId, 0)
+
+	if nil != err1 {
+		log.Println(err1.Error())
+	}
+
+	return userFollowings, nil
+
+}
+
+// BuildUser 根据传入的id列表和空user数组，构建业务所需user数组并返回
+func (followService *FollowSrv) BuildUser(userId int64, users []User, ids []int64, buildtype int) error {
+	folowDao := dao.NewFollowDao(cache.Ctx)
+
+	// 遍历传入的用户id，组成user结构体
+	for i := 0; i < len(ids); i++ {
+
+		// 用户id赋值
+		users[i].Id = ids[i]
+
+		// 用户name赋值
+		var err1 error
+		users[i].Name, err1 = folowDao.GetUserName(ids[i])
+		if nil != err1 {
+			log.Println(err1)
+			return err1
+		}
+
+		// 用户关注数赋值
+		var err2 error
+		users[i].FollowCount, err2 = folowDao.GetFollowingCnt(ids[i])
+		if nil != err2 {
+			log.Println(err2.Error())
+			return err2
+		}
+
+		// 用户粉丝数赋值
+		var err3 error
+		users[i].FollowerCount, err3 = folowDao.GetFollowerCnt(ids[i])
+		if nil != err3 {
+			log.Println(err3.Error())
+			return err3
+		}
+
+	}
+	return nil
+}
+
+// GetFollowingsByRedis 从redis获取登陆用户关注列表
+func GetFollowingsByRedis(userId int64) ([]int64, int64, error) {
+	followDao := dao.NewFollowDao(cache.Ctx)
+	// 判定键是否存在
+	keyCnt, err := cache.UserFollowings.Exists(cache.Ctx, strconv.FormatInt(userId, 10)).Result()
+
+	if err != nil {
+		log.Println(err.Error())
+	}
+
+	// 若键存在，获取缓存数据后返回
+	if keyCnt > 0 {
+		ids := cache.UserFollowings.SMembers(cache.Ctx, strconv.FormatInt(userId, 10)).Val()
+		idsInt64, _ := convertToInt64Array(ids)
+
+		return idsInt64, int64(len(idsInt64)), nil
+	} else {
+		// 键不存在，获取数据库数据，更新缓存并返回
+		userFollowingsId, userFollowingsCnt, err1 := followDao.GetFollowingsInfo(userId)
+		if err1 != nil {
+			log.Println(err1.Error())
+		}
+		ImportToRDBFollowing(cache.Ctx, userId, userFollowingsId)
+		return userFollowingsId, userFollowingsCnt, nil
+	}
+
+}
+
+func convertToInt64Array(strArr []string) ([]int64, error) {
+	int64Arr := make([]int64, len(strArr))
+	for i, str := range strArr {
+		int64Val, err := strconv.ParseInt(str, 10, 64)
+		if err != nil {
+			return nil, err
+		}
+		int64Arr[i] = int64Val
+	}
+	return int64Arr, nil
+}
