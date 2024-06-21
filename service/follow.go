@@ -68,14 +68,15 @@ func (followService *FollowSrv) FollowAction(ctx context.Context, userId int64, 
 func (followService *FollowSrv) AddToRDBWhenFollow(ctx context.Context, userId int64, targetId int64) {
 	followDao := dao.NewFollowDao(ctx)
 	// 尝试给following数据库追加user关注target的记录
-	keyCnt1, err1 := cache.UserFollowings.Exists(ctx, strconv.FormatInt(userId, 10)).Result()
+	stringID := strconv.FormatInt(userId, 10)
+	keyCnt1 := cache.UserFollowings.Exists(context.Background(), stringID)
 
-	if err1 != nil {
-		log.Println(err1.Error())
+	if keyCnt1.Err() != nil {
+		log.Println(keyCnt1.Err().Error())
 	}
 
 	// 只判定键是否不存在，若不存在即从数据库导入
-	if keyCnt1 <= 0 {
+	if keyCnt1.Val() <= 0 {
 		userFollowingsId, _, err := followDao.GetFollowingsInfo(userId)
 		if err != nil {
 			log.Println(err.Error())
@@ -87,13 +88,13 @@ func (followService *FollowSrv) AddToRDBWhenFollow(ctx context.Context, userId i
 	cache.UserFollowings.SAdd(ctx, strconv.FormatInt(userId, 10), targetId)
 
 	// 尝试给follower数据库追加target的粉丝有user的记录
-	keyCnt2, err2 := cache.UserFollowings.Exists(ctx, strconv.FormatInt(targetId, 10)).Result()
+	keyCnt2 := cache.UserFollowings.Exists(context.Background(), strconv.FormatInt(targetId, 10))
 
-	if err2 != nil {
-		log.Println(err2.Error())
+	if keyCnt2.Err() != nil {
+		log.Println(keyCnt2.Err().Error())
 	}
 	//
-	if keyCnt2 <= 0 {
+	if keyCnt2.Val() <= 0 {
 		//获取target的粉丝，直接刷新，关注时刷新target的粉丝
 		userFollowersId, _, err := followDao.GetFollowersInfo(targetId)
 		if err != nil {
@@ -124,4 +125,36 @@ func ImportToRDBFollower(ctx context.Context, userId int64, ids []int64) {
 	}
 
 	cache.UserFollowers.Expire(ctx, strconv.FormatInt(userId, 10), CacheTimeGenerator())
+}
+
+// CancelFollowAction 取关操作的业务
+func (followService *FollowSrv) CancelFollowAction(ctx context.Context, userId int64, targetId int64) (bool, error) {
+
+	// 获取取关的消息队列
+	followDelMQ := mq.SimpleFollowDelMQ
+	followDao := dao.NewFollowDao(ctx)
+	follow, err := followDao.FindEverFollowing(userId, targetId)
+	// 寻找 SQL 出错。
+	if nil != err {
+		return false, err
+	}
+	// 曾经关注过，只需要update一下cancel即可。
+	if nil != follow {
+		err := followDelMQ.PublishSimpleFollow(fmt.Sprintf("%d-%d-%s", userId, targetId, "update"))
+		if err != nil {
+			return false, err
+		}
+		DelToRDBWhenCancelFollow(userId, targetId)
+		return true, nil
+
+	}
+	// 没有关注关系
+	return false, nil
+}
+func DelToRDBWhenCancelFollow(userId int64, targetId int64) {
+	// 当a取关b时，redis的三个关注数据库会有以下操作
+	cache.UserFollowings.SRem(cache.Ctx, strconv.FormatInt(userId, 10), targetId)
+
+	cache.UserFollowers.SRem(cache.Ctx, strconv.FormatInt(targetId, 10), userId)
+
 }

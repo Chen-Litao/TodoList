@@ -42,7 +42,7 @@ func (dao *FollowDao) InsertFollowRelation(userId int64, targetId int64) error {
 		FollowingId: targetId,
 		Followed:    1,
 	}
-	err := dao.Model(&model.Follow{}).Create(follow).Error
+	err := dao.Model(&model.Follow{}).Create(&follow).Error
 	if nil != err {
 		log.Println(err.Error())
 		return err
@@ -74,7 +74,7 @@ func (dao *FollowDao) GetFollowingsInfo(userId int64) ([]int64, int64, error) {
 	var followingId []int64
 
 	// user_id -> following_id
-	result := dao.Model(&model.Follow{}).Where("user_id = ?", userId).Where("followed = ?", 1).Pluck("following_id", &followingId)
+	result := dao.Model(&model.Follow{}).Where("user_id = ? AND followed = ?", userId, 1).Find(&followingId)
 	followingCnt = result.RowsAffected
 
 	if nil != result.Error {

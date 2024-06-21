@@ -189,6 +189,6 @@ func InitFollowRabbitMQ() {
 	SimpleFollowAddMQ = NewSimpleFollowRabbitMQ("follow_add")
 	SimpleFollowDelMQ = NewSimpleFollowRabbitMQ("follow_del")
 	// 开启 go routine 启动消费者
-	//go SimpleFollowAddMQ.ConsumeSimpleFollow()
-	//go SimpleFollowDelMQ.ConsumeSimpleFollow()
+	go SimpleFollowAddMQ.ConsumeSimpleFollow()
+	go SimpleFollowDelMQ.ConsumeSimpleFollow()
 }

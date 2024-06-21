@@ -2,10 +2,12 @@ package cache
 
 import (
 	"ToDoList_self/config"
+	"context"
 	"github.com/redis/go-redis/v9"
+	"log"
 )
 
-//var Ctx = context.Background()
+var Ctx = context.Background()
 
 var RdbTest *redis.Client
 
@@ -31,4 +33,10 @@ func InitRedis() {
 		Password: config.ConfigVal.Redis.Password,
 		DB:       2,
 	})
+	_, err := UserFollowings.Ping(context.Background()).Result()
+	if err != nil {
+		log.Panicf("连接 redis 错误，错误信息: %v", err)
+	} else {
+		log.Println("Redis 连接成功！")
+	}
 }

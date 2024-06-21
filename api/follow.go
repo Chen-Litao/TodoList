@@ -13,7 +13,8 @@ import (
 func RelationActionHandle() func(ctx *gin.Context) {
 	return func(ctx *gin.Context) {
 		var followreq types.FellowReq
-		userInfo, err := ctl.GetUserInfo(ctx)
+		//没有成功获取到用户ID
+		userInfo, err := ctl.GetUserInfo(ctx.Request.Context())
 		if err := ctx.ShouldBind(&followreq); err == nil {
 			fmt.Printf("Register info:%#v\n", followreq)
 		} else {
@@ -28,7 +29,13 @@ func RelationActionHandle() func(ctx *gin.Context) {
 					log.Println(err)
 				}
 			}()
-
+		case 2 == followreq.Type:
+			go func() {
+				_, err := l.CancelFollowAction(ctx, int64(userInfo.Id), int64(followreq.ID))
+				if err != nil {
+					log.Println(err)
+				}
+			}()
 		}
 		if err != nil {
 			ctx.JSON(http.StatusInternalServerError, ctl.RespError(err))

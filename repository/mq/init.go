@@ -1,6 +1,7 @@
 package mq
 
 import (
+	"fmt"
 	amqp "github.com/rabbitmq/amqp091-go"
 	"log"
 )
@@ -26,6 +27,9 @@ func InitRabbitMQ() {
 	}
 	BaseRmq.conn = conn
 	BaseRmq.channel, err = conn.Channel()
+	if err != nil {
+		fmt.Println("channel 错误", err)
+	}
 	BaseRmq.failOnError(err, "Failed to get channel")
 }
 
