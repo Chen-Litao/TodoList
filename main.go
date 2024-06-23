@@ -5,6 +5,7 @@ import (
 	"ToDoList_self/pkg/log"
 	"ToDoList_self/repository/cache"
 	"ToDoList_self/repository/db/dao"
+	"ToDoList_self/repository/mq"
 	"ToDoList_self/routes"
 )
 
@@ -20,5 +21,7 @@ func main() {
 	dao.InitMysql()
 	cache.InitRedis()
 	log.InitLog()
+	mq.InitRabbitMQ()
+	mq.InitFollowRabbitMQ()
 	routes.NewRoute()
 }

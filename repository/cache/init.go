@@ -2,25 +2,41 @@ package cache
 
 import (
 	"ToDoList_self/config"
-	"ToDoList_self/pkg/log"
-	"github.com/go-redis/redis"
-	"strconv"
+	"context"
+	"github.com/redis/go-redis/v9"
+	"log"
 )
 
-var RedisClient *redis.Client
+var Ctx = context.Background()
+
+var RdbTest *redis.Client
+
+// UserFollowings 根据用户id找到他关注的人
+var UserFollowings *redis.Client
+
+// UserFollowers 根据用户id找到他的粉丝
+var UserFollowers *redis.Client
 
 func InitRedis() {
-	db, _ := strconv.ParseUint(config.ConfigVal.Redis.RedisDB, 10, 64)
-	client := redis.NewClient(&redis.Options{
+	RdbTest = redis.NewClient(&redis.Options{
 		Addr:     config.ConfigVal.Redis.RedisAddr,
 		Password: config.ConfigVal.Redis.Password, // no password set
-		DB:       int(db),                         // use default DB
-		PoolSize: 100,
+		DB:       0,                               // use default DB
 	})
-	_, err := client.Ping().Result()
+	UserFollowings = redis.NewClient(&redis.Options{
+		Addr:     config.ConfigVal.Redis.RedisAddr,
+		Password: config.ConfigVal.Redis.Password,
+		DB:       1,
+	})
+	UserFollowers = redis.NewClient(&redis.Options{
+		Addr:     config.ConfigVal.Redis.RedisAddr,
+		Password: config.ConfigVal.Redis.Password,
+		DB:       2,
+	})
+	_, err := UserFollowings.Ping(context.Background()).Result()
 	if err != nil {
-		log.LoggerObj.Error(err)
-		return
+		log.Panicf("连接 redis 错误，错误信息: %v", err)
+	} else {
+		log.Println("Redis 连接成功！")
 	}
-	RedisClient = client
 }

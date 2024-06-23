@@ -1,0 +1,83 @@
+basePath: /todoList
+definitions:
+  ctl.Response:
+    properties:
+      data: {}
+      error:
+        type: string
+      msg:
+        type: string
+      status:
+        type: integer
+    type: object
+  types.LoginReq:
+    properties:
+      password:
+        type: string
+      user:
+        type: string
+    type: object
+  types.RegisterReq:
+    properties:
+      password:
+        type: string
+      user:
+        type: string
+    type: object
+info:
+  contact:
+    name: Little Chen
+  description: A sample demo of ToDoList
+  license:
+    name: Apache 2.0
+    url: http://www.apache.org/licenses/LICENSE-2.0.html
+  title: Self_TDoList
+  version: "0.10"
+paths:
+  /login:
+    post:
+      consumes:
+      - application/json
+      parameters:
+      - description: 用户名, 密码
+        in: body
+        name: data
+        required: true
+        schema:
+          $ref: '#/definitions/types.LoginReq'
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: '{"status":200,"data":{},"msg":"ok"}'
+          schema:
+            $ref: '#/definitions/ctl.Response'
+        "500":
+          description: '{"status":500,"data":{},"Msg":{},"Error":"error"}'
+          schema:
+            $ref: '#/definitions/ctl.Response'
+      summary: 用户登录接口接口
+  /register:
+    post:
+      consumes:
+      - application/json
+      parameters:
+      - description: 用户名, 密码
+        in: body
+        name: data
+        required: true
+        schema:
+          $ref: '#/definitions/types.RegisterReq'
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: '{"status":200,"data":{},"msg":"ok"}'
+          schema:
+            $ref: '#/definitions/ctl.Response'
+        "500":
+          description: '{"status":500,"data":{},"Msg":{},"Error":"error"}'
+          schema:
+            $ref: '#/definitions/ctl.Response'
+      summary: 用户注册接口接口
+swagger: "2.0"

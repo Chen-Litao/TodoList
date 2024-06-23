@@ -31,6 +31,7 @@ func JWT() gin.HandlerFunc {
 			c.Abort()
 			return
 		}
+		//会把JWT解析出来的ID写入到ctx中
 		c.Request = c.Request.WithContext(ctl.NewUserOptContext(c.Request.Context(), &ctl.UserInfo{Id: tokenclaim.Id}))
 
 	}

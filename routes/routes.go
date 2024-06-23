@@ -33,8 +33,12 @@ func NewRoute() {
 			authed.POST("task_search", api.SearchTaskHandle()) //查
 			authed.POST("task_delete", api.DeleteTaskHandle()) //删
 
+			authed.POST("follow_action", api.RelationActionHandle())
+			authed.GET("follow_list", api.FollowListHandle())
+			authed.GET("follower_list", api.FollowerListHandle())
+
 		}
 	}
 
-	r.Run(":8080")
+	r.Run(":4080")
 }

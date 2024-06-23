@@ -27,6 +27,19 @@ type SearchTasksReq struct {
 type DeleteTasksReq struct {
 	ID uint `form:"id"`
 }
+
+type FellowReq struct {
+	ID   uint `form:"to_user_id"`
+	Type uint `form:"action_type"`
+}
+type FollowListReq struct {
+	ID uint `form:"user_id"`
+}
+
+type FollowerListReq struct {
+	ID uint `form:"user_id"`
+}
+
 type ListTasksTx struct {
 	Uid       uint
 	Title     string
