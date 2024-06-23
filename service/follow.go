@@ -179,6 +179,48 @@ func (followService *FollowSrv) GetFollowings(userId int64) ([]User, error) {
 
 }
 
+func (followService *FollowSrv) GetFollower(ctx context.Context, userId int64) ([]User, error) {
+	userFollowersId, userFollowingsCnt, err := GetFollowerByRedis(ctx, userId)
+	if nil != err {
+		log.Println(err.Error())
+	}
+	userFollowers := make([]User, userFollowingsCnt)
+	err1 := followService.BuildUser(userId, userFollowers, userFollowersId, 0)
+	if nil != err1 {
+		log.Println(err1.Error())
+	}
+
+	return userFollowers, nil
+}
+
+// GetFollowingsByRedis 从redis获取登陆用户关注列表
+func GetFollowerByRedis(ctx context.Context, userId int64) ([]int64, int64, error) {
+	followDao := dao.NewFollowDao(cache.Ctx)
+	// 判定键是否存在
+	keyCnt, err := cache.UserFollowers.Exists(ctx, strconv.FormatInt(userId, 10)).Result()
+
+	if err != nil {
+		log.Println(err.Error())
+	}
+
+	// 若键存在，获取缓存数据后返回
+	if keyCnt > 0 {
+		ids := cache.UserFollowers.SMembers(ctx, strconv.FormatInt(userId, 10)).Val()
+		idsInt64, _ := convertToInt64Array(ids)
+
+		return idsInt64, int64(len(idsInt64)), nil
+	} else {
+		// 键不存在，获取数据库数据，更新缓存并返回
+		userFollowersId, userFollowersCnt, err1 := followDao.GetFollowersInfo(userId)
+		if err1 != nil {
+			log.Println(err1.Error())
+		}
+		ImportToRDBFollowing(ctx, userId, userFollowersId)
+		return userFollowersId, userFollowersCnt, nil
+	}
+
+}
+
 // BuildUser 根据传入的id列表和空user数组，构建业务所需user数组并返回
 func (followService *FollowSrv) BuildUser(userId int64, users []User, ids []int64, buildtype int) error {
 	folowDao := dao.NewFollowDao(cache.Ctx)

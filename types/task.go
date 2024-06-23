@@ -36,6 +36,10 @@ type FollowListReq struct {
 	ID uint `form:"user_id"`
 }
 
+type FollowerListReq struct {
+	ID uint `form:"user_id"`
+}
+
 type ListTasksTx struct {
 	Uid       uint
 	Title     string

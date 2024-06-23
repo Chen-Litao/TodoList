@@ -61,7 +61,7 @@ func FollowListHandle() func(ctx *gin.Context) {
 		followings, err1 := l.GetFollowings(int64(followlist.ID))
 		if err1 != nil {
 			fmt.Printf("fail")
-			ctx.JSON(http.StatusOK, ctl.RespError(err1))
+			ctx.JSON(http.StatusInternalServerError, ctl.RespError(err1))
 			return
 		}
 
@@ -71,6 +71,20 @@ func FollowListHandle() func(ctx *gin.Context) {
 
 func FollowerListHandle() func(ctx *gin.Context) {
 	return func(ctx *gin.Context) {
+		userInfo, err := ctl.GetUserInfo(ctx.Request.Context())
+		if err == nil {
+			fmt.Printf("Register info:%#v\n", userInfo)
+		} else {
+			fmt.Println("请求参数获取失败：", err)
+		}
+		l := service.GetFollowSrv()
+		followers, err1 := l.GetFollower(ctx, int64(userInfo.Id))
+		if err1 != nil {
+			fmt.Printf("fail")
+			ctx.JSON(http.StatusInternalServerError, ctl.RespError(err1))
+			return
+		}
 
+		ctx.JSON(http.StatusOK, followers)
 	}
 }

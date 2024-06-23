@@ -35,7 +35,7 @@ func NewRoute() {
 
 			authed.POST("follow_action", api.RelationActionHandle())
 			authed.GET("follow_list", api.FollowListHandle())
-			authed.GET("relation/follower/list/", api.FollowerListHandle())
+			authed.GET("follower_list", api.FollowerListHandle())
 
 		}
 	}

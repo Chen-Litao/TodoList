@@ -85,6 +85,7 @@ func (dao *FollowDao) GetFollowingsInfo(userId int64) ([]int64, int64, error) {
 	return followingId, followingCnt, nil
 
 }
+
 func (dao *FollowDao) GetFollowersInfo(userId int64) ([]int64, int64, error) {
 
 	var followerCnt int64
